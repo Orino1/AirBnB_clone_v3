@@ -37,6 +37,40 @@ class TestDBStorageDocs(unittest.TestCase):
         self.assertEqual(result.total_errors, 0,
                          "Found code style errors (and warnings).")
 
+    def test_get_method(self):
+        """Test the get method of DBStorage"""
+        state = State(name="California")
+        state.save()
+        state_id = state.id
+        retrieved_state = models.storage.get(State, state_id)
+        self.assertEqual(state, retrieved_state,
+                         "get method did not retrieve the object correctly")
+
+    def test_get_method_nonexistent(self):
+        """Test the get method for a nonexistent object"""
+        nonexistent_state_id = "nonexistent_id"
+        retrieved_state = models.storage.get(State, nonexistent_state_id)
+        self.assertIsNone(retrieved_state,
+                          "get method should return None for nonexistent objects")
+
+    def test_count_method(self):
+        """Test the count method of DBStorage"""
+        state_count = models.storage.count(State)
+        self.assertEqual(state_count, 0,
+                         "count method should return 0 initially")
+
+        state = State(name="New York")
+        state.save()
+        state_count = models.storage.count(State)
+        self.assertEqual(state_count, 1,
+                         "count method should return 1 after adding one object")
+
+    def test_count_method_no_class(self):
+        """Test the count method when no class is passed"""
+        total_count = models.storage.count()
+        self.assertGreater(total_count, 0,
+                          "count method should return the total count of objects")
+
     def test_pep8_conformance_test_db_storage(self):
         """Test tests/test_models/test_db_storage.py conforms to PEP8."""
         pep8s = pep8.StyleGuide(quiet=True)
