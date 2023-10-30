@@ -42,20 +42,18 @@ class DBStorage:
 
     def get(self, cls, id):
         """A method to retrieve one object"""
-        key = f"{cls}.{id}"
-        objects = self.all(cls)
-        if key in objects:
-            return objects[key]
-        else:
-            return None
+        obj_dict = models.storage.all(cls)
+        for k, v in obj_dict.items():
+            matchstring = cls + '.' + id
+            if k == matchstring:
+                return v
+
+        return None
 
     def count(self, cls=None):
         """A method to count the number of objects in storage"""
-        objects = self.all(cls)
-        if len(objects) == 0:
-            return len(self.all())
-        else:
-            return len(objects)
+        obj_dict = models.storage.all(cls)
+        return len(obj_dict)
 
     def all(self, cls=None):
         """query on the current database session"""
